@@ -9,6 +9,6 @@ API для Интернет-банка
     Пополнение баланса на заданную сумму;
     Перевести заданную сумму другому пользователю.
 
-![alt text]([https://github.com/[username]/[reponame]/blob/[branch]/image.jpg](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png)?raw=true)
+![alt text](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png?raw=true)
 
-<img src="https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png" height="60" width="60" >
+<img src="https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png">

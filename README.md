@@ -8,3 +8,5 @@ API для Интернет-банка
     Снятие заданной суммы с баланса пользователя;
     Пополнение баланса на заданную сумму;
     Перевести заданную сумму другому пользователю.
+
+![alt text]([https://github.com/[username]/[reponame]/blob/[branch]/image.jpg](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png)?raw=true)

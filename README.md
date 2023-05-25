@@ -10,4 +10,5 @@ API для Интернет-банка
     Перевести заданную сумму другому пользователю.
 
 ![alt text]([https://github.com/[username]/[reponame]/blob/[branch]/image.jpg](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png)?raw=true)
-https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png
+
+<img src="https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png" height="60" width="60" >

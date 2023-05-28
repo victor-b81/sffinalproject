@@ -10,7 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+//@RequestMapping("/api")
 public class UserActionController {
     private final userActionService userActionService;
     @GetMapping("/getBalance")

@@ -11,12 +11,6 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class AtmApi {
     public static void main(String[] args) {
-
-        try {
-            dbTools.test_db_connection("atmapi_db", "postgres", "admin");
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
         SpringApplication.run(AtmApi.class, args);
     }
 }

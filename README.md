@@ -14,5 +14,5 @@ API для Интернет-банка
     Перевести заданную сумму другому пользователю; https://sffinalproject-production.up.railway.app//transferMoney?sendUserId=1&recipUserId=2&tMoney=7
     Получить историю операций. https://sffinalproject-production.up.railway.app//getOperationList?userID=1
 
-![alt text](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_3.png?raw=true)
+![alt text](https://github.com/victor-b81/sffinalproject/blob/master/src/screenshotdb/Screenshot_1.png?raw=true)
 

@@ -3,19 +3,24 @@ package org.sf.finalproject.entity;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.math.BigDecimal;
 
 @Entity
 @Data
-@Table(name = "Table_Money")
+@Table(name = "Table_Money", uniqueConstraints =
+        {
+                @UniqueConstraint(columnNames = "ID"),
+                @UniqueConstraint(columnNames = "USER_ID")
+        } )
 public class TableMoney {
+
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "ID", nullable = false)
+    private Long ID;
 
     @Column(name = "USER_ID")
-    private Long userId;
+    private String userId;
 
     @Column(name = "USER_BALANCE")
-    private BigDecimal userBalance;
+    private String userBalance;
 }

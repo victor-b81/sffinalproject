@@ -8,8 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 @Repository
@@ -17,26 +16,29 @@ import java.util.Map;
 public class userActionsRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    static String statsRowMapperParam = null;
     public Map<BigDecimal, String> getUserBalance (Long userId){
-        Map<String, Long> parameters = new HashMap<>();
+        Map<String, String> parameters = new HashMap<>();
         Map<BigDecimal, String> returnUserBalance = new HashMap<>();
-        parameters.put("userId", userId);
+        parameters.put("userId", String.valueOf(userId));
         try {
-            returnUserBalance.put((namedParameterJdbcTemplate.queryForObject("SELECT USER_BALANCE FROM Table_Money WHERE user_id = :userId", parameters, new StatsRowMapper())), "All OK");
+            statsRowMapperParam = "USER_BALANCE";
+            returnUserBalance.put((namedParameterJdbcTemplate.queryForObject("SELECT USER_BALANCE FROM Table_Money" +
+                    " WHERE user_id = :userId", parameters, new StatsRowMapper())), "ALL OK");
             return returnUserBalance;
         }catch (Exception e){
             returnUserBalance.put(BigDecimal.valueOf(-1), "Ошибка идентификатора пользователя c ID "+ userId +": "+e);
             return returnUserBalance;
         }
     }
-    private static final class StatsRowMapper implements RowMapper<BigDecimal> {
+    private static class StatsRowMapper implements RowMapper<BigDecimal>{
         @Override
         public BigDecimal mapRow(ResultSet resultset, int i) throws SQLException {
-            return BigDecimal.valueOf(resultset.getInt("USER_BALANCE"));
+            return BigDecimal.valueOf(resultset.getInt(statsRowMapperParam));
         }
     }
 
-    public Map<Integer, String> putUserMoney(Long userId, BigDecimal pUserMoney){
+    public Map<Integer, String> putUserMoney(Long userId, BigDecimal pUserMoney, String operationID, String commentTransaction){
         Map<Integer, String> pResult = new HashMap<>();
         Map<BigDecimal, String> pUserCheck = getUserBalance(userId);
         if (pUserCheck.containsKey(BigDecimal.valueOf(-1))){
@@ -50,11 +52,19 @@ public class userActionsRepository {
             for (BigDecimal key : pUserCheck.keySet()) {
                 pUserBalance = key;
             }
-            Map<String, BigDecimal> putParameters = new HashMap<>();
-            putParameters.put("userId", BigDecimal.valueOf(userId));
-            putParameters.put("userBalance", pUserBalance.add(pUserMoney));
+            Map<String, String> putParameters = new HashMap<>();
+            putParameters.put("userId", String.valueOf(userId));
+            putParameters.put("userBalance", String.valueOf(pUserBalance.add(pUserMoney)));
+            putParameters.put("operationID", operationID);
+            putParameters.put("amountTransaction", String.valueOf(pUserMoney));
+            putParameters.put("commentTransaction", commentTransaction);
             try {
-                namedParameterJdbcTemplate.update("UPDATE Table_Money SET USER_BALANCE = :userBalance WHERE user_id = :userId", putParameters);
+                namedParameterJdbcTemplate.update("BEGIN;" +
+                        " UPDATE Table_Money SET USER_BALANCE = :userBalance WHERE user_id = :userId;" +
+                        " INSERT INTO TABLE_HISTORY_OPERATION (OPERATION_ID, USER_ID, TIMESTAMP, DATE, AMOUNT_TRANSACTION," +
+                        " COMMENT_TRANSACTION)" +
+                        " VALUES (:operationID, :userId, CURRENT_TIMESTAMP, CURRENT_Date, :amountTransaction, :commentTransaction);" +
+                        " COMMIT;", putParameters);
                 pResult.put(1, "ALL OK");
             }catch (Exception e){
                 pResult.put(0, String.valueOf(e));
@@ -63,7 +73,7 @@ public class userActionsRepository {
         return pResult;
     }
 
-    public Map<Integer, String> takeMoney(Long userId, BigDecimal tMoney){
+    public Map<Integer, String> takeMoney(Long userId, BigDecimal tMoney, String operationID, String commentTransaction){
         BigDecimal withdrawMoney = null;
         Map<Integer, String> tResult = new HashMap<>();
         Map<BigDecimal, String> tUserCheck = getUserBalance(userId);
@@ -82,11 +92,19 @@ public class userActionsRepository {
             if (withdrawMoney.compareTo(BigDecimal.ZERO) <=0){
                 tResult.put(0, "Недостаточно средств на счету.");
             }else {
-                Map<String, BigDecimal> putParameters = new HashMap<>();
-                putParameters.put("sendUserId", BigDecimal.valueOf(userId));
-                putParameters.put("withdrawMoney", withdrawMoney);
+                Map<String, String> putParameters = new HashMap<>();
+                putParameters.put("userId", String.valueOf(userId));
+                putParameters.put("userBalance", String.valueOf(withdrawMoney));
+                putParameters.put("operationID", operationID);
+                putParameters.put("amountTransaction", String.valueOf(tMoney));
+                putParameters.put("commentTransaction", commentTransaction);
                 try {
-                    namedParameterJdbcTemplate.update("UPDATE Table_Money SET USER_BALANCE = :withdrawMoney WHERE user_id = :sendUserId", putParameters);
+                    namedParameterJdbcTemplate.update("BEGIN;" +
+                            " UPDATE Table_Money SET USER_BALANCE = :userBalance WHERE user_id = :userId;" +
+                            " INSERT INTO TABLE_HISTORY_OPERATION (OPERATION_ID, USER_ID, TIMESTAMP, DATE, AMOUNT_TRANSACTION," +
+                            " COMMENT_TRANSACTION)" +
+                            " VALUES (:operationID, :userId, CURRENT_TIMESTAMP, CURRENT_Date, :amountTransaction, :commentTransaction);" +
+                            " COMMIT;", putParameters);
                     tResult.put(1, "ALL OK");
                 }catch (Exception e){
                     tResult.put(0, String.valueOf(e));
@@ -113,9 +131,11 @@ public class userActionsRepository {
             }
             tResult.put(0, erroreValue);
         } else {
-            Map<Integer, String> takeOperation = takeMoney(senderUserId, transMoney);
+            Map<Integer, String> takeOperation = takeMoney(senderUserId, transMoney, "3", "Transfer money" +
+                    " to the client ID:" + recipentUserId);
             if (takeOperation.containsValue("ALL OK")){
-                Map<Integer, String> putOperation = putUserMoney(recipentUserId, transMoney);
+                Map<Integer, String> putOperation = putUserMoney(recipentUserId, transMoney, "4", "Transfer money" +
+                        " from the client ID:" + senderUserId);
                 if (putOperation.containsValue("ALL OK")){
                     tResult.put(1, "ALL OK");
                 } else {

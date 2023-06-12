@@ -14,7 +14,6 @@ import javax.annotation.Resource;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
 import java.util.Properties;
 
 @Configuration

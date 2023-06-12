@@ -15,15 +15,15 @@ public class userActionService {
         return userActionsRepository.getUserBalance(userId);
     }
 
-    public Map<Integer, String> putUserAccountMoney(Long userId, BigDecimal pUserMoney){
-        return userActionsRepository.putUserMoney(userId, pUserMoney);
+    public Map<Integer, String> putUserAccountMoneyService(Long userId, BigDecimal pUserMoney){
+        return userActionsRepository.putUserMoney(userId, pUserMoney, "1", "Client put the money");
     }
 
-    public Map<Integer, String> takeMoney(Long userId, BigDecimal tMoney){
-        return userActionsRepository.takeMoney(userId, tMoney);
+    public Map<Integer, String> takeMoneyService(Long userId, BigDecimal tMoney){
+        return userActionsRepository.takeMoney(userId, tMoney, "2", "Client take the money");
     }
 
-    public Map<Integer, String> transferMoney(Long sendUserId, Long recipUserId, BigDecimal tMoney){
+    public Map<Integer, String> transferMoneyService(Long sendUserId, Long recipUserId, BigDecimal tMoney){
         return userActionsRepository.transferMoney(sendUserId, recipUserId, tMoney);
     }
 
